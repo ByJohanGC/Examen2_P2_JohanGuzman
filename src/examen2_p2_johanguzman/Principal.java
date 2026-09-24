@@ -4,6 +4,14 @@
  */
 package examen2_p2_johanguzman;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import javax.swing.JFileChooser;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author DELL
@@ -11,12 +19,19 @@ package examen2_p2_johanguzman;
 public class Principal extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Principal.class.getName());
-
+    DefaultTableModel modelotabla= new DefaultTableModel();
+    JFileChooser filechooser=new JFileChooser();
     /**
      * Creates new form Principal
      */
     public Principal() {
         initComponents();
+        modelotabla.addColumn("Codigo");
+        modelotabla.addColumn("Nombre");
+        modelotabla.addColumn("Categoria");
+        modelotabla.addColumn("Precio");
+        modelotabla.addColumn("Cantidad");
+        tablaproducto.setModel(modelotabla);
     }
 
     /**
@@ -33,9 +48,14 @@ public class Principal extends javax.swing.JFrame {
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tablaproducto = new javax.swing.JTable();
         jButton2 = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -44,7 +64,7 @@ public class Principal extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel1.setText("Sistema de Inventarios");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tablaproducto.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -55,11 +75,12 @@ public class Principal extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tablaproducto);
 
         jButton2.setBackground(new java.awt.Color(153, 204, 0));
         jButton2.setForeground(new java.awt.Color(0, 0, 0));
         jButton2.setText("Cargar Producto");
+        jButton2.addActionListener(this::jButton2ActionPerformed);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -84,15 +105,44 @@ public class Principal extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Mostrar Producto", jPanel2);
 
+        jLabel2.setText("CODIGO");
+
+        jLabel3.setText("NOMBRE");
+
+        jLabel4.setText("CATEGORIA");
+
+        jLabel5.setText("PRECIO");
+
+        jLabel6.setText("jLabel6");
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 727, Short.MAX_VALUE)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(jLabel2)
+                .addGap(53, 53, 53)
+                .addComponent(jLabel3)
+                .addGap(60, 60, 60)
+                .addComponent(jLabel4)
+                .addGap(72, 72, 72)
+                .addComponent(jLabel5)
+                .addGap(62, 62, 62)
+                .addComponent(jLabel6)
+                .addContainerGap(229, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 403, Short.MAX_VALUE)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(24, 24, 24)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel5)
+                    .addComponent(jLabel6))
+                .addContainerGap(363, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Registrar Producto", jPanel4);
@@ -134,6 +184,30 @@ public class Principal extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        int opt=filechooser.showOpenDialog(this);
+        if(opt==JFileChooser.APPROVE_OPTION){
+            File archivo=filechooser.getSelectedFile();
+            try{
+                FileReader fr=new FileReader(archivo);
+                BufferedReader br=new BufferedReader(fr);
+                String linea=br.readLine();
+                do{
+                    String []array=linea.split(",");
+                    modelotabla.addRow(array);
+                    linea=br.readLine();
+                }while(linea!=null);
+                br.close();
+               
+            }catch(IOException e){
+                
+            }
+            
+        }
+        
+    }//GEN-LAST:event_jButton2ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -162,11 +236,16 @@ public class Principal extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable tablaproducto;
     // End of variables declaration//GEN-END:variables
 }

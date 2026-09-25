@@ -16,4 +16,14 @@ public class Inventario {
         listainventario.add(t);
          
     }
+    public String buscarporcodigo(String codigo){
+        String producto=" ";
+        for(int x=0;x<listainventario.size();x++){
+            if(listainventario.get(x)instanceof Productos){
+                producto+=(Productos)listainventario.get(x);
+                producto+=",";
+            }
+        }
+        return producto;
+    }
 }

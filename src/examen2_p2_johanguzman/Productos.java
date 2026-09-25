@@ -9,9 +9,9 @@ package examen2_p2_johanguzman;
  * @author DELL
  */
 public class Productos {
-    String Codigo;String Nombre;String Categoria;int Precio;int Cantidad;
+    String Codigo;String Nombre;String Categoria;double Precio;int Cantidad;
 
-    public Productos(String Codigo, String Nombre, String Categoria, int Precio, int Cantidad) {
+    public Productos(String Codigo, String Nombre, String Categoria, double Precio, int Cantidad) {
         this.Codigo = Codigo;
         this.Nombre = Nombre;
         this.Categoria = Categoria;
@@ -43,11 +43,11 @@ public class Productos {
         this.Categoria = Categoria;
     }
 
-    public int getPrecio() {
+    public double getPrecio() {
         return Precio;
     }
 
-    public void setPrecio(int Precio) {
+    public void setPrecio(double Precio) {
         this.Precio = Precio;
     }
 

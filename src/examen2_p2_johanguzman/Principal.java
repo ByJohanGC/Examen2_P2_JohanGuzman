@@ -262,19 +262,43 @@ public class Principal extends javax.swing.JFrame {
         int opt=filechooser.showOpenDialog(this);
         if(opt==JFileChooser.APPROVE_OPTION){
             File archivo=filechooser.getSelectedFile();
-            try{
-                FileReader fr=new FileReader(archivo);
-                BufferedReader br=new BufferedReader(fr);
+            int agregados=0;
+            int rechazados=0;
+            try(BufferedReader br=new BufferedReader(new FileReader(archivo))){
                 String linea=br.readLine();
-                do{
-                    String []array=linea.split(",");
-                    modelotabla.addRow(array);
+                while(linea!=null){
+                    if(!linea.trim().isEmpty()){
+                        String[] datos=linea.split(",");
+                        if(datos.length==5){
+                            try{
+                                String codigo=datos[0].trim();
+                                String nombre=datos[1].trim();
+                                String categoria=datos[2].trim();
+                                double precio=Double.parseDouble(datos[3].trim());
+                                int cantidad=Integer.parseInt(datos[4].trim());
+                                Productos p=new Productos(codigo,nombre,categoria,precio,cantidad);
+                                String resultado=inventario.agregarproducto(p);
+                                if(resultado.equals("OK")){
+                                    modelotabla.addRow(new Object[]{p.getCodigo(),p.getNombre(),p.getCategoria(),p.getPrecio(),p.getCantidad()});
+                                    agregados++;
+                                }else{
+                                    // linea con datos invalidos (codigo repetido, precio <=0, cantidad negativa)
+                                    rechazados++;
+                                }
+                            }catch(NumberFormatException nfe){
+                                // precio o cantidad no numericos: se descarta esa linea
+                                rechazados++;
+                            }
+                        }else{
+                            // la linea no tiene las 5 columnas esperadas
+                            rechazados++;
+                        }
+                    }
                     linea=br.readLine();
-                }while(linea!=null);
-                br.close();
-               
+                }
+                JOptionPane.showMessageDialog(this,"Productos cargados: "+agregados+"\nLineas rechazadas: "+rechazados);
             }catch(IOException e){
-                
+                JOptionPane.showMessageDialog(this,"No se pudo leer el archivo:\n"+e.getMessage(),"Error de lectura",JOptionPane.ERROR_MESSAGE);
             }
             
         }
@@ -287,11 +311,46 @@ public class Principal extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        Productos t=new Productos(jTextField1.getText(),jTextField2.getText(),jTextField3.getText(),Integer.parseInt(jTextField4.getText()),Integer.parseInt(jTextField5.getText()));
-        inventario.agregarproducto(t);
-        String []array=new String[5];
-        array[0]=jTextField1.getText();array[1]=jTextField2.getText();array[2]=jTextField3.getText();array[3]=jTextField4.getText();array[4]=jTextField5.getText();
-        modelotabla.addRow(array);
+        String codigo=jTextField1.getText().trim();
+        String nombre=jTextField2.getText().trim();
+        String categoria=jTextField3.getText().trim();
+        String textoPrecio=jTextField4.getText().trim();
+        String textoCantidad=jTextField5.getText().trim();
+
+        if(codigo.isEmpty()||nombre.isEmpty()||categoria.isEmpty()||textoPrecio.isEmpty()||textoCantidad.isEmpty()){
+            JOptionPane.showMessageDialog(this,"Todos los campos son obligatorios","Datos incompletos",JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        double precio;
+        int cantidad;
+        try{
+            precio=Double.parseDouble(textoPrecio);
+        }catch(NumberFormatException e){
+            JOptionPane.showMessageDialog(this,"El precio debe ser un numero valido","Dato invalido",JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        try{
+            cantidad=Integer.parseInt(textoCantidad);
+        }catch(NumberFormatException e){
+            JOptionPane.showMessageDialog(this,"La cantidad debe ser un numero entero valido","Dato invalido",JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        Productos t=new Productos(codigo,nombre,categoria,precio,cantidad);
+        String resultado=inventario.agregarproducto(t);
+        if(!resultado.equals("OK")){
+            JOptionPane.showMessageDialog(this,resultado,"No se pudo agregar",JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        modelotabla.addRow(new Object[]{codigo,nombre,categoria,precio,cantidad});
+
+        jTextField1.setText("");
+        jTextField2.setText("");
+        jTextField3.setText("");
+        jTextField4.setText("");
+        jTextField5.setText("");
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
@@ -299,22 +358,39 @@ public class Principal extends javax.swing.JFrame {
         int opt =filechooser.showSaveDialog(this);
         if(opt==JFileChooser.APPROVE_OPTION){
             File archivo=filechooser.getSelectedFile();
-            try{
-                FileWriter fw=new FileWriter(archivo);
-                BufferedWriter bw=new BufferedWriter(fw);
-                String linea=jTextField1.getText()+","+jTextField2.getText()+","+jTextField3.getText()+","+jTextField4.getText()+","+jTextField5.getText();
+            try(BufferedWriter bw=new BufferedWriter(new FileWriter(archivo))){
+                ArrayList<Productos> lista=inventario.getListainventario();
+                for(int x=0;x<lista.size();x++){
+                    Productos p=lista.get(x);
+                    bw.write(p.getCodigo()+","+p.getNombre()+","+p.getCategoria()+","+p.getPrecio()+","+p.getCantidad());
+                    bw.newLine();
+                }
+                JOptionPane.showMessageDialog(this,"Inventario guardado correctamente");
             }catch(IOException e){
-                
+                JOptionPane.showMessageDialog(this,"No se pudo guardar el archivo:\n"+e.getMessage(),"Error de escritura",JOptionPane.ERROR_MESSAGE);
             }
         }
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
-        String codigo=JOptionPane.showInputDialog("Ingrese Codigo de Producto");
-        inventario.buscarporcodigo(codigo);
-        String []array=codigo.split(",");
-        modelotabla.addRow(array);
+        String codigo=JOptionPane.showInputDialog(this,"Ingrese Codigo de Producto");
+        if(codigo==null){
+            return;
+        }
+        codigo=codigo.trim();
+        if(codigo.isEmpty()){
+            JOptionPane.showMessageDialog(this,"Debe ingresar un codigo","Dato invalido",JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        Productos p=inventario.buscarporcodigo(codigo);
+        if(p!=null){
+            String info="Codigo: "+p.getCodigo()+"\nNombre: "+p.getNombre()+"\nCategoria: "+p.getCategoria()
+                    +"\nPrecio: "+p.getPrecio()+"\nCantidad: "+p.getCantidad();
+            JOptionPane.showMessageDialog(this,info,"Producto encontrado",JOptionPane.INFORMATION_MESSAGE);
+        }else{
+            JOptionPane.showMessageDialog(this,"Producto no encontrado","Sin resultados",JOptionPane.WARNING_MESSAGE);
+        }
     }//GEN-LAST:event_jButton4ActionPerformed
 
     /**

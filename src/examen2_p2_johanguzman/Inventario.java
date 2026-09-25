@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class Inventario {
     ArrayList<Productos> listainventario = new ArrayList<Productos>();
 
-    // Revisa si ya existe un producto registrado con ese codigo
+   
     public boolean existecodigo(String codigo) {
         for (int x = 0; x < listainventario.size(); x++) {
             Productos p = listainventario.get(x);
@@ -24,8 +24,7 @@ public class Inventario {
         return false;
     }
 
-    // Intenta agregar un producto validando las reglas del negocio.
-    // Devuelve "OK" si se pudo agregar, o el mensaje del error si no.
+  
     public String agregarproducto(Productos t) {
         if (t.getCodigo() == null || t.getCodigo().trim().isEmpty()) {
             return "El codigo no puede estar vacio";
@@ -44,7 +43,7 @@ public class Inventario {
         return "OK";
     }
 
-    // Busca un producto por su codigo. Devuelve null si no lo encuentra.
+    
     public Productos buscarporcodigo(String codigo) {
         for (int x = 0; x < listainventario.size(); x++) {
             Productos p = listainventario.get(x);

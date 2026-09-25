@@ -5,6 +5,7 @@
 package examen2_p2_johanguzman;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -22,7 +23,7 @@ public class Principal extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Principal.class.getName());
     DefaultTableModel modelotabla= new DefaultTableModel();
     JFileChooser filechooser=new JFileChooser();
-    ArrayList listainventario= new ArrayList();
+    Inventario inventario=new Inventario();
     /**
      * Creates new form Principal
      */
@@ -134,6 +135,7 @@ public class Principal extends javax.swing.JFrame {
         jButton3.setBackground(new java.awt.Color(0, 153, 0));
         jButton3.setForeground(new java.awt.Color(0, 0, 0));
         jButton3.setText("GUARDAR TXT");
+        jButton3.addActionListener(this::jButton3ActionPerformed);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -276,11 +278,26 @@ public class Principal extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         Productos t=new Productos(jTextField1.getText(),jTextField2.getText(),jTextField3.getText(),Integer.parseInt(jTextField4.getText()),Integer.parseInt(jTextField5.getText()));
-        listainventario.add(t);
+        inventario.agregarproducto(t);
         String []array=new String[5];
         array[0]=jTextField1.getText();array[1]=jTextField2.getText();array[2]=jTextField3.getText();array[3]=jTextField4.getText();array[4]=jTextField5.getText();
         modelotabla.addRow(array);
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+        int opt =filechooser.showSaveDialog(this);
+        if(opt==JFileChooser.APPROVE_OPTION){
+            File archivo=filechooser.getSelectedFile();
+            try{
+                FileWriter fw=new FileWriter(archivo);
+                BufferedWriter bw=new BufferedWriter(fw);
+                String linea=jTextField1.getText()+","+jTextField2.getText()+","+jTextField3.getText()+","+jTextField4.getText()+","+jTextField5.getText();
+            }catch(IOException e){
+                
+            }
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments

@@ -4,10 +4,16 @@
  */
 package examen2_p2_johanguzman;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author DELL
  */
 public class Inventario {
-    
+    ArrayList listainventario= new ArrayList();
+    public void agregarproducto(Productos t){
+        listainventario.add(t);
+         
+    }
 }
